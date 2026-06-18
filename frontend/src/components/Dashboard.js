@@ -8,6 +8,7 @@ function Dashboard() {
   const [pcbas, setPCBAs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState(null); // null, 'passed', 'failed', 'pending'
 
   useEffect(() => {
     loadDashboardData();
@@ -37,11 +38,27 @@ function Dashboard() {
     return <span className={classes[status] || classes.pending}>{status.toUpperCase()}</span>;
   };
 
-  // Filter PCBAs based on search query
-  const filteredPCBAs = pcbas.filter(pcba =>
-    pcba.serial_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    pcba.board_type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter PCBAs based on search query and status filter
+  const filteredPCBAs = pcbas.filter(pcba => {
+    // Search filter
+    const matchesSearch = !searchQuery ||
+      pcba.serial_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      pcba.board_type.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Status filter
+    const matchesStatus = !statusFilter || pcba.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleStatusFilter = (status) => {
+    if (statusFilter === status) {
+      // If clicking the same filter, clear it
+      setStatusFilter(null);
+    } else {
+      setStatusFilter(status);
+    }
+  };
 
   if (loading) {
     return <div className="card">Loading...</div>;
@@ -52,26 +69,69 @@ function Dashboard() {
       <h1 style={{ marginBottom: '2rem' }}>Dashboard</h1>
 
       <div className="stats-grid">
-        <div className="stat-card">
+        <div
+          className="stat-card"
+          onClick={() => setStatusFilter(null)}
+          style={{
+            cursor: 'pointer',
+            border: statusFilter === null ? '2px solid #3498db' : '2px solid transparent',
+            transform: statusFilter === null ? 'scale(1.02)' : 'scale(1)',
+            transition: 'all 0.2s'
+          }}
+        >
           <h3>Total PCBAs</h3>
           <div className="stat-value">{statistics.total}</div>
         </div>
-        <div className="stat-card">
+        <div
+          className="stat-card"
+          onClick={() => handleStatusFilter('passed')}
+          style={{
+            cursor: 'pointer',
+            border: statusFilter === 'passed' ? '2px solid #27ae60' : '2px solid transparent',
+            transform: statusFilter === 'passed' ? 'scale(1.02)' : 'scale(1)',
+            transition: 'all 0.2s'
+          }}
+        >
           <h3>Passed</h3>
           <div className="stat-value" style={{ color: '#27ae60' }}>{statistics.passed}</div>
         </div>
-        <div className="stat-card">
+        <div
+          className="stat-card"
+          onClick={() => handleStatusFilter('failed')}
+          style={{
+            cursor: 'pointer',
+            border: statusFilter === 'failed' ? '2px solid #e74c3c' : '2px solid transparent',
+            transform: statusFilter === 'failed' ? 'scale(1.02)' : 'scale(1)',
+            transition: 'all 0.2s'
+          }}
+        >
           <h3>Failed</h3>
           <div className="stat-value" style={{ color: '#e74c3c' }}>{statistics.failed}</div>
         </div>
-        <div className="stat-card">
+        <div
+          className="stat-card"
+          onClick={() => handleStatusFilter('pending')}
+          style={{
+            cursor: 'pointer',
+            border: statusFilter === 'pending' ? '2px solid #f39c12' : '2px solid transparent',
+            transform: statusFilter === 'pending' ? 'scale(1.02)' : 'scale(1)',
+            transition: 'all 0.2s'
+          }}
+        >
           <h3>Pending</h3>
           <div className="stat-value" style={{ color: '#f39c12' }}>{statistics.pending}</div>
         </div>
       </div>
 
       <div className="card">
-        <h2>Recent PCBAs</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2 style={{ marginBottom: 0 }}>Recent PCBAs</h2>
+          {statusFilter && (
+            <button className="btn btn-secondary" onClick={() => setStatusFilter(null)}>
+              Clear Filter
+            </button>
+          )}
+        </div>
 
         {pcbas.length > 0 && (
           <div className="form-group" style={{ marginBottom: '1.5rem' }}>
@@ -82,8 +142,9 @@ function Dashboard() {
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{ marginBottom: '0.5rem' }}
             />
-            {searchQuery && (
+            {(searchQuery || statusFilter) && (
               <p style={{ color: '#7f8c8d', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                {statusFilter && <span>Showing <strong>{statusFilter.toUpperCase()}</strong> PCBAs • </span>}
                 Found {filteredPCBAs.length} result{filteredPCBAs.length !== 1 ? 's' : ''}
               </p>
             )}
