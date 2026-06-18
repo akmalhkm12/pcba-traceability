@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import { pcbaAPI } from '../services/api';
 import { formatToMalaysiaTime, formatToMalaysiaDate } from '../utils/timeFormat';
 
@@ -60,30 +61,43 @@ function PCBADetails() {
 
       <div className="card">
         <h2>General Information</h2>
-        <table className="table">
-          <tbody>
-            <tr>
-              <th>Serial Number</th>
-              <td>{pcba.serial_number}</td>
-            </tr>
-            <tr>
-              <th>Board Type</th>
-              <td>{pcba.board_type}</td>
-            </tr>
-            <tr>
-              <th>Status</th>
-              <td>{getStatusBadge(pcba.status)}</td>
-            </tr>
-            <tr>
-              <th>Created</th>
-              <td>{formatToMalaysiaTime(pcba.created_at)}</td>
-            </tr>
-            <tr>
-              <th>Last Updated</th>
-              <td>{formatToMalaysiaTime(pcba.updated_at)}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '2rem', alignItems: 'start' }}>
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>Serial Number</th>
+                <td style={{ fontWeight: 600, fontSize: '1.1rem' }}>{pcba.serial_number}</td>
+              </tr>
+              <tr>
+                <th>Board Type</th>
+                <td>{pcba.board_type}</td>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <td>{getStatusBadge(pcba.status)}</td>
+              </tr>
+              <tr>
+                <th>Created</th>
+                <td>{formatToMalaysiaTime(pcba.created_at)}</td>
+              </tr>
+              <tr>
+                <th>Last Updated</th>
+                <td>{formatToMalaysiaTime(pcba.updated_at)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="qr-code-container">
+            <QRCodeSVG
+              value={pcba.serial_number}
+              size={150}
+              level="H"
+              includeMargin={true}
+            />
+            <p style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--medium-gray)', fontWeight: 600 }}>
+              QR Code
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="card">

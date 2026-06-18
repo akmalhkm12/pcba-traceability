@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { pcbaAPI } from '../services/api';
 import { formatToMalaysiaTime } from '../utils/timeFormat';
+import { exportPCBAsToCSV } from '../utils/csvExport';
+import DashboardTable from './DashboardTable';
 
 function Dashboard() {
   const [statistics, setStatistics] = useState({ total: 0, passed: 0, failed: 0, pending: 0 });
@@ -124,26 +126,36 @@ function Dashboard() {
       </div>
 
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ marginBottom: 0 }}>Recent PCBAs</h2>
-          {statusFilter && (
-            <button className="btn btn-secondary" onClick={() => setStatusFilter(null)}>
-              Clear Filter
-            </button>
-          )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h2 style={{ marginBottom: 0 }}>PCBA Records</h2>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            {statusFilter && (
+              <button className="btn btn-secondary" onClick={() => setStatusFilter(null)} style={{ padding: '0.6rem 1.2rem' }}>
+                Clear Filter
+              </button>
+            )}
+            {filteredPCBAs.length > 0 && (
+              <button
+                className="export-btn"
+                onClick={() => exportPCBAsToCSV(filteredPCBAs)}
+              >
+                📊 Export to CSV
+              </button>
+            )}
+          </div>
         </div>
 
         {pcbas.length > 0 && (
           <div className="form-group" style={{ marginBottom: '1.5rem' }}>
             <input
               type="text"
-              placeholder="Search by serial number or board type..."
+              placeholder="🔍 Search by serial number or board type..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{ marginBottom: '0.5rem' }}
             />
             {(searchQuery || statusFilter) && (
-              <p style={{ color: '#7f8c8d', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+              <p style={{ color: 'var(--medium-gray)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
                 {statusFilter && <span>Showing <strong>{statusFilter.toUpperCase()}</strong> PCBAs • </span>}
                 Found {filteredPCBAs.length} result{filteredPCBAs.length !== 1 ? 's' : ''}
               </p>
@@ -152,26 +164,24 @@ function Dashboard() {
         )}
 
         {pcbas.length === 0 ? (
-          <p>No PCBAs found. <Link to="/create">Create your first PCBA</Link></p>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--medium-gray)' }}>
+            <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>No PCBAs found in the system.</p>
+            <Link to="/create">
+              <button className="btn btn-success">Create Your First PCBA</button>
+            </Link>
+          </div>
         ) : filteredPCBAs.length === 0 ? (
-          <p>No PCBAs match your search. <button className="btn btn-secondary" onClick={() => setSearchQuery('')}>Clear Search</button></p>
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--medium-gray)' }}>
+            <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>No PCBAs match your search criteria.</p>
+            <button className="btn btn-secondary" onClick={() => {
+              setSearchQuery('');
+              setStatusFilter(null);
+            }}>
+              Clear All Filters
+            </button>
+          </div>
         ) : (
-          <ul className="pcba-list">
-            {filteredPCBAs.map(pcba => (
-              <li key={pcba.id} className="pcba-item">
-                <div className="pcba-info">
-                  <h3>{pcba.serial_number}</h3>
-                  <p>Board Type: {pcba.board_type} | Created: {formatToMalaysiaTime(pcba.created_at)}</p>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  {getStatusBadge(pcba.status)}
-                  <Link to={`/pcba/${encodeURIComponent(pcba.serial_number)}`}>
-                    <button className="btn btn-primary">View Details</button>
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <DashboardTable pcbas={filteredPCBAs} getStatusBadge={getStatusBadge} />
         )}
       </div>
     </div>

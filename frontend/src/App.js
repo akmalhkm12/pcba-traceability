@@ -14,7 +14,13 @@ function App() {
       <div className="App">
         <nav className="navbar">
           <div className="nav-container">
-            <h1 className="nav-title">PCBA Traceability System</h1>
+            <div className="company-header">
+              <div className="company-logo">MT</div>
+              <div className="company-info">
+                <h1>PCBA Traceability System</h1>
+                <p>Manufacturing Quality Control & Traceability</p>
+              </div>
+            </div>
             <ul className="nav-menu">
               <li><Link to="/">Dashboard</Link></li>
               <li><Link to="/scanner">Scanner</Link></li>
