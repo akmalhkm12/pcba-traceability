@@ -18,7 +18,6 @@ function App() {
               <div className="company-logo">MT</div>
               <div className="company-info">
                 <h1>PCBA Traceability System</h1>
-                <p>Manufacturing Quality Control & Traceability</p>
               </div>
             </div>
             <ul className="nav-menu">
