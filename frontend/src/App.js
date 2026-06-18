@@ -15,17 +15,6 @@ function App() {
         <nav className="navbar">
           <div className="nav-container">
             <div className="company-header">
-              <div className="company-logo">
-                <img
-                  src="/company-logo.png"
-                  alt="Company Logo"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'block';
-                  }}
-                />
-                <span className="logo-fallback">MT</span>
-              </div>
               <div className="company-info">
                 <h1>PCBA Traceability System</h1>
               </div>
