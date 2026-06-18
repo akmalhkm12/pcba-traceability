@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { pcbaAPI } from '../services/api';
-import { formatToMalaysiaTime } from '../utils/timeFormat';
 import { exportPCBAsToCSV } from '../utils/csvExport';
 import DashboardTable from './DashboardTable';
 
