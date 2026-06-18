@@ -16,7 +16,15 @@ function App() {
           <div className="nav-container">
             <div className="company-header">
               <div className="company-logo">
-                <img src="/micron-logo.jpg" alt="Micron Logo" />
+                <img
+                  src="/micron-logo.jpg"
+                  alt="Micron"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                  }}
+                />
+                <span className="logo-fallback">Micron</span>
               </div>
               <div className="company-info">
                 <h1>PCBA Traceability System</h1>
