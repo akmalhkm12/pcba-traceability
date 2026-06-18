@@ -1,0 +1,66 @@
+============================================================
+QUICK START - Deploy Your PCBA System to the Cloud
+============================================================
+
+Follow these 4 simple steps to make your system accessible to everyone:
+
+STEP 1: CREATE GITHUB ACCOUNT
+------------------------------
+1. Go to: https://github.com
+2. Sign up for free account
+3. Verify your email
+
+STEP 2: UPLOAD YOUR CODE TO GITHUB
+-----------------------------------
+EASIEST METHOD:
+1. Download GitHub Desktop: https://desktop.github.com
+2. Open GitHub Desktop
+3. File → Add local repository
+4. Browse to: C:\Users\arusdi\pcba-traceability
+5. Click "Publish repository"
+6. Done!
+
+STEP 3: DEPLOY BACKEND (5 minutes)
+-----------------------------------
+1. Go to: https://render.com
+2. Sign up with GitHub account
+3. New + → Web Service
+4. Select your pcba-traceability repository
+5. Settings:
+   - Root Directory: backend
+   - Build: npm install
+   - Start: npm start
+   - Add Environment Variable:
+     FRONTEND_URL = *
+6. Click "Create Web Service"
+7. COPY THE URL (you'll need it!)
+
+STEP 4: DEPLOY FRONTEND (3 minutes)
+------------------------------------
+1. Go to: https://vercel.com
+2. Sign up with GitHub
+3. Import your pcba-traceability repository
+4. Settings:
+   - Root Directory: frontend
+   - Add Environment Variable:
+     REACT_APP_API_URL = [paste your Render backend URL]/api
+5. Click "Deploy"
+6. DONE! Copy your app URL
+
+STEP 5: UPDATE BACKEND CORS
+----------------------------
+1. Go back to Render.com
+2. Open your backend service
+3. Environment tab
+4. Edit FRONTEND_URL
+5. Change from * to your Vercel URL
+6. Save
+
+============================================================
+THAT'S IT! Your app is now live and accessible to everyone!
+============================================================
+
+Share your Vercel URL with your team!
+
+For detailed guide, see: DEPLOYMENT.md
+For troubleshooting, see: DEPLOYMENT.md
