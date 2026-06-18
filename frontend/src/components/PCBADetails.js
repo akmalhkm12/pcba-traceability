@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { pcbaAPI } from '../services/api';
+import { formatToMalaysiaTime, formatToMalaysiaDate } from '../utils/timeFormat';
 
 function PCBADetails() {
   const { identifier } = useParams();
@@ -75,11 +76,11 @@ function PCBADetails() {
             </tr>
             <tr>
               <th>Created</th>
-              <td>{new Date(pcba.created_at).toLocaleString()}</td>
+              <td>{formatToMalaysiaTime(pcba.created_at)}</td>
             </tr>
             <tr>
               <th>Last Updated</th>
-              <td>{new Date(pcba.updated_at).toLocaleString()}</td>
+              <td>{formatToMalaysiaTime(pcba.updated_at)}</td>
             </tr>
           </tbody>
         </table>
@@ -93,7 +94,7 @@ function PCBADetails() {
               <div key={record.id} className="record-item">
                 <h4>{record.process_stage}</h4>
                 <p><strong>Operator:</strong> {record.operator_name}</p>
-                <p><strong>Timestamp:</strong> {new Date(record.timestamp).toLocaleString()}</p>
+                <p><strong>Timestamp:</strong> {formatToMalaysiaTime(record.timestamp)}</p>
                 {record.notes && <p><strong>Notes:</strong> {record.notes}</p>}
               </div>
             ))
@@ -113,7 +114,7 @@ function PCBADetails() {
               }}>
                 <h4>{record.test_type} - {record.test_result.toUpperCase()}</h4>
                 <p><strong>Operator:</strong> {record.operator_name}</p>
-                <p><strong>Timestamp:</strong> {new Date(record.timestamp).toLocaleString()}</p>
+                <p><strong>Timestamp:</strong> {formatToMalaysiaTime(record.timestamp)}</p>
                 {record.measured_value !== null && (
                   <p>
                     <strong>Measured:</strong> {record.measured_value} {record.unit}
@@ -150,7 +151,7 @@ function PCBADetails() {
                     <td>{component.component_value || '-'}</td>
                     <td>{component.lot_code || '-'}</td>
                     <td>{component.supplier || '-'}</td>
-                    <td>{new Date(component.timestamp).toLocaleDateString()}</td>
+                    <td>{formatToMalaysiaDate(component.timestamp)}</td>
                   </tr>
                 ))}
               </tbody>
