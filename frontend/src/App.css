@@ -1,4 +1,4 @@
-/* Industrial Professional Theme - Blue/Gray Color Scheme */
+/* Industrial Professional Theme - Blue/Gray Color Scheme with Dark Mode */
 
 :root {
   --primary-blue: #1e3a5f;
@@ -14,12 +14,49 @@
   --warning: #d69e2e;
   --error: #e53e3e;
   --border-color: #cbd5e0;
+
+  /* Light theme specific */
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --bg-primary: #ffffff;
+  --bg-secondary: #edf2f7;
+  --bg-tertiary: #f7fafc;
+  --card-bg: #ffffff;
+  --table-hover: #f7fafc;
+  --input-bg: #ffffff;
+  --pagination-bg: white;
+}
+
+[data-theme="dark"] {
+  --primary-blue: #2c5282;
+  --secondary-blue: #1e3a5f;
+  --accent-blue: #4299e1;
+  --light-blue: #63b3ed;
+  --dark-gray: #cbd5e0;
+  --medium-gray: #a0aec0;
+  --light-gray: #718096;
+  --bg-gray: #1a202c;
+  --white: #2d3748;
+  --border-color: #4a5568;
+
+  /* Dark theme specific */
+  --text-primary: #e2e8f0;
+  --text-secondary: #cbd5e0;
+  --bg-primary: #2d3748;
+  --bg-secondary: #1a202c;
+  --bg-tertiary: #2d3748;
+  --card-bg: #2d3748;
+  --table-hover: #374151;
+  --input-bg: #374151;
+  --pagination-bg: #374151;
 }
 
 .App {
   min-height: 100vh;
-  background-color: var(--bg-gray);
+  background-color: var(--bg-secondary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Navigation Bar */
@@ -119,17 +156,18 @@
 
 /* Cards */
 .card {
-  background: var(--white);
+  background: var(--card-bg);
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
   border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
 }
 
 .card h2 {
   margin-bottom: 1.5rem;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.5rem;
   border-bottom: 2px solid var(--accent-blue);
@@ -145,7 +183,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
@@ -157,8 +195,10 @@
   border: 2px solid var(--border-color);
   border-radius: 6px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
   font-family: inherit;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .form-group input:focus,
@@ -263,13 +303,14 @@
 }
 
 .stat-card {
-  background: var(--white);
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
   text-align: center;
   border: 2px solid transparent;
   border-top: 4px solid var(--accent-blue);
+  transition: background-color 0.3s ease;
 }
 
 .stat-card:hover {
@@ -277,7 +318,7 @@
 }
 
 .stat-card h3 {
-  color: var(--medium-gray);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
   text-transform: uppercase;
@@ -288,7 +329,7 @@
 .stat-card .stat-value {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   line-height: 1;
 }
 
@@ -358,8 +399,9 @@
 .professional-table td {
   padding: 1rem;
   border-bottom: 1px solid var(--border-color);
-  color: var(--dark-gray);
+  color: var(--text-primary);
   font-size: 0.95rem;
+  background-color: var(--card-bg);
 }
 
 .professional-table tbody tr {
@@ -367,7 +409,7 @@
 }
 
 .professional-table tbody tr:hover {
-  background-color: #f7fafc;
+  background-color: var(--table-hover);
 }
 
 .professional-table tbody tr:last-child td {
@@ -387,11 +429,11 @@
 .pagination button {
   padding: 0.5rem 1rem;
   border: 2px solid var(--border-color);
-  background: white;
+  background: var(--pagination-bg);
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   transition: all 0.2s;
 }
 
@@ -449,7 +491,7 @@
 
 .details-section h3 {
   margin-bottom: 1rem;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   border-bottom: 3px solid var(--accent-blue);
   padding-bottom: 0.75rem;
   font-weight: 600;
@@ -457,29 +499,30 @@
 }
 
 .record-item {
-  background: #f7fafc;
+  background: var(--bg-tertiary);
   padding: 1.25rem;
   margin-bottom: 0.75rem;
   border-radius: 6px;
   border-left: 4px solid var(--accent-blue);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
 }
 
 .record-item h4 {
   margin-bottom: 0.75rem;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.1rem;
 }
 
 .record-item p {
-  color: var(--medium-gray);
+  color: var(--text-secondary);
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }
 
 .record-item p strong {
-  color: var(--dark-gray);
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -532,6 +575,46 @@
     flex-direction: column;
     text-align: center;
   }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.98);
+}
+
+.theme-toggle-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Update nav-menu to work with theme toggle */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
 /* Utility Classes */
