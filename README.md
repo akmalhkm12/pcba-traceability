@@ -1,5 +1,7 @@
 # PCBA Traceability System
 
+**Version 2.0 - Professional Industrial Edition**
+
 A comprehensive web-based traceability system for Printed Circuit Board Assembly (PCBA) designed for small-scale prototype and lab operations.
 
 ## 🚀 Quick Deploy (Make It Accessible to Everyone)
@@ -14,11 +16,21 @@ The guide covers FREE deployment to cloud services with no credit card required!
 
 ## Features
 
+### Core Functionality
 - **Assembly Process Tracking**: Record each assembly step with operator names, timestamps, and notes
 - **Testing & QC Records**: Document test results with measured values, pass/fail status, and detailed notes
 - **Barcode/QR Scanning**: Built-in camera-based scanning for quick PCBA lookup
-- **Dashboard**: Real-time statistics and overview of all PCBAs
 - **Complete Traceability**: Full history of each board from creation to final testing
+
+### Professional Edition Features (v2.0)
+- **Industrial Blue/Gray Theme**: Professional color scheme designed for manufacturing environments
+- **CSV Export**: Export filtered/searched PCBAs to CSV for analysis and reporting
+- **Sortable Data Tables**: Click column headers to sort by any field
+- **Advanced Pagination**: Configurable items per page (10/25/50/100) with smart navigation
+- **QR Code Generation**: Automatic QR code for each PCBA on details page
+- **Smart Search & Filters**: Real-time search combined with clickable status filters
+- **Malaysia Timezone**: All timestamps displayed in Malaysia time (MYT UTC+8)
+- **Dashboard Statistics**: Interactive stat cards with click-to-filter functionality
 
 ## Technology Stack
 
