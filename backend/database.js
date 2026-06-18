@@ -1,159 +1,132 @@
-const initSqlJs = require('sql.js');
-const fs = require('fs');
-const path = require('path');
+const { Pool } = require('pg');
 
-const dbPath = path.join(__dirname, 'pcba_traceability.db');
-let db = null;
-let SQL = null;
+// PostgreSQL connection pool
+let pool = null;
 
-// Initialize database
+// Initialize database connection
 async function initDatabase() {
-  SQL = await initSqlJs();
+  // Get connection string from environment variable or use default
+  const connectionString = process.env.DATABASE_URL ||
+    'postgresql://postgres:H%40kim28837922@db.mgcmisttioxpmesnnzbr.supabase.co:5432/postgres';
 
-  // Load existing database or create new one
-  if (fs.existsSync(dbPath)) {
-    const buffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(buffer);
-    console.log('Loaded existing database');
-  } else {
-    db = new SQL.Database();
-    console.log('Created new database');
+  // Create connection pool
+  pool = new Pool({
+    connectionString: connectionString,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+
+  // Test connection
+  try {
+    const client = await pool.connect();
+    console.log('Connected to PostgreSQL database');
+    client.release();
+  } catch (error) {
+    console.error('Failed to connect to database:', error);
+    throw error;
   }
 
-  // Enable foreign keys
-  db.run('PRAGMA foreign_keys = ON');
-
-  // Create tables
-  db.run(`
+  // Create tables (PostgreSQL syntax)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS pcbas (
-      id TEXT PRIMARY KEY,
-      serial_number TEXT UNIQUE NOT NULL,
-      board_type TEXT NOT NULL,
-      status TEXT DEFAULT 'pending',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      id VARCHAR(255) PRIMARY KEY,
+      serial_number VARCHAR(255) UNIQUE NOT NULL,
+      board_type VARCHAR(255) NOT NULL,
+      status VARCHAR(50) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS assembly_records (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      pcba_id TEXT NOT NULL,
-      process_stage TEXT NOT NULL,
-      operator_name TEXT NOT NULL,
+      id SERIAL PRIMARY KEY,
+      pcba_id VARCHAR(255) NOT NULL,
+      process_stage VARCHAR(255) NOT NULL,
+      operator_name VARCHAR(255) NOT NULL,
       notes TEXT,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (pcba_id) REFERENCES pcbas(id) ON DELETE CASCADE
     )
   `);
 
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS test_records (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      pcba_id TEXT NOT NULL,
-      test_type TEXT NOT NULL,
-      test_result TEXT NOT NULL,
+      id SERIAL PRIMARY KEY,
+      pcba_id VARCHAR(255) NOT NULL,
+      test_type VARCHAR(255) NOT NULL,
+      test_result VARCHAR(50) NOT NULL,
       measured_value REAL,
       expected_value REAL,
-      unit TEXT,
-      operator_name TEXT NOT NULL,
+      unit VARCHAR(50),
+      operator_name VARCHAR(255) NOT NULL,
       notes TEXT,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (pcba_id) REFERENCES pcbas(id) ON DELETE CASCADE
     )
   `);
 
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS components (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      pcba_id TEXT NOT NULL,
-      component_name TEXT NOT NULL,
-      component_value TEXT,
-      lot_code TEXT,
-      supplier TEXT,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      id SERIAL PRIMARY KEY,
+      pcba_id VARCHAR(255) NOT NULL,
+      component_name VARCHAR(255) NOT NULL,
+      component_value VARCHAR(255),
+      lot_code VARCHAR(255),
+      supplier VARCHAR(255),
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (pcba_id) REFERENCES pcbas(id) ON DELETE CASCADE
     )
   `);
 
-  console.log('Database initialized successfully');
-  saveDatabase();
+  console.log('Database tables initialized successfully');
 }
 
-// Save database to file
-function saveDatabase() {
-  if (db) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(dbPath, buffer);
-  }
-}
-
-// Wrapper object with prepare method
+// Wrapper object with prepare method (maintains compatibility with existing code)
 const dbWrapper = {
   prepare: function(sql) {
     return {
       run: async function(...params) {
         try {
-          const stmt = db.prepare(sql);
-          stmt.bind(params);
-          stmt.step();
-          stmt.free();
+          // Convert ? placeholders to $1, $2, etc. for PostgreSQL
+          let paramIndex = 1;
+          const pgSql = sql.replace(/\?/g, () => `$${paramIndex++}`);
 
-          saveDatabase();
+          const result = await pool.query(pgSql, params);
 
           return {
-            changes: db.getRowsModified(),
-            lastInsertRowid: db.exec('SELECT last_insert_rowid() as id')[0]?.values[0]?.[0] || 0
+            changes: result.rowCount,
+            lastInsertRowid: result.rows[0]?.id || 0
           };
         } catch (error) {
+          console.error('Database run error:', error);
           throw error;
         }
       },
       get: async function(...params) {
         try {
-          const stmt = db.prepare(sql);
-          stmt.bind(params);
+          // Convert ? placeholders to $1, $2, etc. for PostgreSQL
+          let paramIndex = 1;
+          const pgSql = sql.replace(/\?/g, () => `$${paramIndex++}`);
 
-          if (stmt.step()) {
-            const columns = stmt.getColumnNames();
-            const values = stmt.get();
-
-            const row = {};
-            columns.forEach((col, idx) => {
-              row[col] = values[idx];
-            });
-
-            stmt.free();
-            return row;
-          }
-
-          stmt.free();
-          return undefined;
+          const result = await pool.query(pgSql, params);
+          return result.rows[0] || undefined;
         } catch (error) {
+          console.error('Database get error:', error);
           throw error;
         }
       },
       all: async function(...params) {
         try {
-          const stmt = db.prepare(sql);
-          stmt.bind(params);
+          // Convert ? placeholders to $1, $2, etc. for PostgreSQL
+          let paramIndex = 1;
+          const pgSql = sql.replace(/\?/g, () => `$${paramIndex++}`);
 
-          const rows = [];
-          const columns = stmt.getColumnNames();
-
-          while (stmt.step()) {
-            const values = stmt.get();
-            const row = {};
-            columns.forEach((col, idx) => {
-              row[col] = values[idx];
-            });
-            rows.push(row);
-          }
-
-          stmt.free();
-          return rows;
+          const result = await pool.query(pgSql, params);
+          return result.rows;
         } catch (error) {
+          console.error('Database all error:', error);
           throw error;
         }
       }
@@ -161,7 +134,7 @@ const dbWrapper = {
   },
 
   isReady: function() {
-    return db !== null;
+    return pool !== null;
   }
 };
 
