@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { pcbaAPI } from '../services/api';
 
@@ -8,11 +8,7 @@ function PCBADetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadPCBADetails();
-  }, [identifier]);
-
-  const loadPCBADetails = async () => {
+  const loadPCBADetails = useCallback(async () => {
     try {
       const response = await pcbaAPI.getPCBA(identifier);
       setPCBA(response.data);
@@ -26,7 +22,11 @@ function PCBADetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [identifier]);
+
+  useEffect(() => {
+    loadPCBADetails();
+  }, [loadPCBADetails]);
 
   const getStatusBadge = (status) => {
     const classes = {
