@@ -15,7 +15,9 @@ function App() {
         <nav className="navbar">
           <div className="nav-container">
             <div className="company-header">
-              <div className="company-logo">Micron</div>
+              <div className="company-logo">
+                <img src="/micron-logo.avif" alt="Micron Logo" />
+              </div>
               <div className="company-info">
                 <h1>PCBA Traceability System</h1>
               </div>
